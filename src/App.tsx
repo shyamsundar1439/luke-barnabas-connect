@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +13,8 @@ import Sermons from "./pages/Sermons";
 import BibleStudy from "./pages/BibleStudy";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +31,8 @@ const App = () => (
               <Route path="/sermons" element={<Sermons />} />
               <Route path="/bible-study" element={<BibleStudy />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

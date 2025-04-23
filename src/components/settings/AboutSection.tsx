@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Share } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Share, Settings } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from './translations';
 
@@ -29,6 +30,14 @@ const AboutSection = ({ handleShareApp }: AboutSectionProps) => {
           <Share className="w-4 h-4 mr-2 dark:text-white" />
           {t.shareApp}
         </button>
+        
+        <Link 
+          to="/admin" 
+          className="flex items-center text-lb-blue hover:text-lb-blue-dark dark:text-lb-blue-light dark:hover:text-white"
+        >
+          <Settings className="w-4 h-4 mr-2 dark:text-white" />
+          Admin Panel
+        </Link>
         
         <a 
           href="mailto:support@lukebarnabas.com" 
