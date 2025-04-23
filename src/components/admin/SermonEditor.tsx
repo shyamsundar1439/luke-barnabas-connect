@@ -135,13 +135,18 @@ const SermonEditor = () => {
     if (!currentSermon) return;
     
     if (lang) {
-      setCurrentSermon({
-        ...currentSermon,
-        [field]: {
-          ...currentSermon[field as keyof typeof currentSermon],
-          [lang]: value
-        }
-      });
+      // Fix: Ensure we're dealing with objects when spreading
+      const fieldValue = currentSermon[field as keyof typeof currentSermon];
+      
+      if (typeof fieldValue === 'object' && fieldValue !== null) {
+        setCurrentSermon({
+          ...currentSermon,
+          [field]: {
+            ...fieldValue,
+            [lang]: value
+          }
+        });
+      }
     } else {
       setCurrentSermon({
         ...currentSermon,

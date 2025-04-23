@@ -142,13 +142,18 @@ const BibleStudyEditor = () => {
     if (!currentMeeting) return;
     
     if (lang) {
-      setCurrentMeeting({
-        ...currentMeeting,
-        [field]: {
-          ...currentMeeting[field as keyof typeof currentMeeting],
-          [lang]: value
-        }
-      });
+      // Fix: Ensure we're dealing with objects when spreading
+      const fieldValue = currentMeeting[field as keyof typeof currentMeeting];
+      
+      if (typeof fieldValue === 'object' && fieldValue !== null) {
+        setCurrentMeeting({
+          ...currentMeeting,
+          [field]: {
+            ...fieldValue,
+            [lang]: value
+          }
+        });
+      }
     } else {
       setCurrentMeeting({
         ...currentMeeting,

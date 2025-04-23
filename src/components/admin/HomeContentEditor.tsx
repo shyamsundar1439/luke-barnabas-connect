@@ -52,13 +52,18 @@ const HomeContentEditor = () => {
 
   const handleChange = (section: string, field: string, value: string | boolean, lang?: string) => {
     if (lang) {
-      setContent({
-        ...content,
-        [section]: {
-          ...content[section as keyof typeof content],
-          [lang]: value
-        }
-      });
+      // Fix: Ensure we're dealing with objects when spreading
+      const sectionValue = content[section as keyof typeof content];
+      
+      if (typeof sectionValue === 'object' && sectionValue !== null) {
+        setContent({
+          ...content,
+          [section]: {
+            ...sectionValue,
+            [lang]: value
+          }
+        });
+      }
     } else if (section === 'upcomingEvent' && field !== 'title' && field !== 'description') {
       setContent({
         ...content,
@@ -68,16 +73,21 @@ const HomeContentEditor = () => {
         }
       });
     } else if (section === 'upcomingEvent' && (field === 'title' || field === 'description') && lang) {
-      setContent({
-        ...content,
-        upcomingEvent: {
-          ...content.upcomingEvent,
-          [field]: {
-            ...content.upcomingEvent[field as keyof typeof content.upcomingEvent],
-            [lang]: value
+      // Fix: Ensure we're dealing with objects when spreading
+      const fieldValue = content.upcomingEvent[field as keyof typeof content.upcomingEvent];
+      
+      if (typeof fieldValue === 'object' && fieldValue !== null) {
+        setContent({
+          ...content,
+          upcomingEvent: {
+            ...content.upcomingEvent,
+            [field]: {
+              ...fieldValue,
+              [lang]: value
+            }
           }
-        }
-      });
+        });
+      }
     } else {
       setContent({
         ...content,
