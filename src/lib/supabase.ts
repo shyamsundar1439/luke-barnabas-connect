@@ -68,5 +68,5 @@ export const supabase = supabaseUrl && supabaseAnonKey
           signIn: () => Promise.resolve({ data: null, error: null }),
           signOut: () => Promise.resolve({ error: null })
         }
-      }
+      })
     };
