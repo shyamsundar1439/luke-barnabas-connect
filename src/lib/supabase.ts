@@ -17,7 +17,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : {
-      from: () => ({
+      from: (table: string) => ({
         select: () => ({
           order: () => ({
             then: (callback: any) => callback({ data: [], error: null }),
@@ -55,18 +55,41 @@ export const supabase = supabaseUrl && supabaseAnonKey
             })
           })
         }),
-        storage: {
-          from: () => ({
-            upload: () => ({
-              then: (callback: any) => callback({ data: null, error: null })
-            }),
-            getPublicUrl: () => ({ data: { publicUrl: '' } })
+        insert: () => ({
+          select: () => ({
+            then: (callback: any) => callback({ data: [], error: null }),
+            data: [],
+            error: null
           })
-        },
-        auth: {
-          signUp: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
-          signIn: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
-          signOut: () => ({ then: (callback: any) => callback({ error: null }) })
-        }
-      })
+        }),
+        update: () => ({
+          eq: () => ({
+            select: () => ({
+              then: (callback: any) => callback({ data: [], error: null }),
+              data: [],
+              error: null
+            })
+          })
+        }),
+        delete: () => ({
+          eq: () => ({
+            then: (callback: any) => callback({ data: null, error: null }),
+            data: null,
+            error: null
+          })
+        })
+      }),
+      storage: {
+        from: () => ({
+          upload: () => ({
+            then: (callback: any) => callback({ data: null, error: null })
+          }),
+          getPublicUrl: () => ({ data: { publicUrl: '' } })
+        })
+      },
+      auth: {
+        signUp: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
+        signIn: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
+        signOut: () => ({ then: (callback: any) => callback({ error: null }) })
+      }
     };

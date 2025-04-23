@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import SermonCard from '@/components/sermons/SermonCard';
@@ -36,13 +35,16 @@ const translations = {
 };
 
 const fetchSermons = async () => {
-  const response = await supabase
-    .from('sermons')
-    .select('*')
-    .order('date', { ascending: false });
-    
-  if (response.error) throw response.error;
-  return response.data || [];
+  return new Promise((resolve, reject) => {
+    supabase
+      .from('sermons')
+      .select('*')
+      .order('date', { ascending: false })
+      .then((response) => {
+        if (response.error) reject(response.error);
+        else resolve(response.data || []);
+      });
+  });
 };
 
 const Sermons = () => {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,30 +35,34 @@ const BibleStudyEditor = () => {
   const { language } = useLanguage();
   const queryClient = useQueryClient();
   
-  // Fetch bible study meetings from Supabase
   const { data: meetings, isLoading } = useQuery({
     queryKey: ['bible-studies'],
     queryFn: async () => {
-      const response = await supabase
-        .from('bible_studies')
-        .select('*')
-        .order('date', { ascending: true });
-      
-      if (response.error) throw response.error;
-      return response.data || [];
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('bible_studies')
+          .select('*')
+          .order('date', { ascending: true })
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(response.data || []);
+          });
+      });
     }
   });
 
-  // Add meeting mutation
   const addMeetingMutation = useMutation({
     mutationFn: async (meeting: BibleStudyMeeting) => {
-      const response = await supabase
-        .from('bible_studies')
-        .insert(meeting)
-        .select();
-      
-      if (response.error) throw response.error;
-      return response.data;
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('bible_studies')
+          .insert(meeting)
+          .select()
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(response.data);
+          });
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -78,17 +81,19 @@ const BibleStudyEditor = () => {
     }
   });
 
-  // Update meeting mutation
   const updateMeetingMutation = useMutation({
     mutationFn: async (meeting: BibleStudyMeeting) => {
-      const response = await supabase
-        .from('bible_studies')
-        .update(meeting)
-        .eq('id', meeting.id)
-        .select();
-      
-      if (response.error) throw response.error;
-      return response.data;
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('bible_studies')
+          .update(meeting)
+          .eq('id', meeting.id)
+          .select()
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(response.data);
+          });
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -107,16 +112,18 @@ const BibleStudyEditor = () => {
     }
   });
 
-  // Delete meeting mutation
   const deleteMeetingMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await supabase
-        .from('bible_studies')
-        .delete()
-        .eq('id', id);
-      
-      if (response.error) throw response.error;
-      return id;
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('bible_studies')
+          .delete()
+          .eq('id', id)
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(id);
+          });
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -188,7 +195,6 @@ const BibleStudyEditor = () => {
     if (!currentMeeting) return;
     
     if (lang) {
-      // Fix: Ensure we're dealing with objects when spreading
       const fieldValue = currentMeeting[field as keyof typeof currentMeeting];
       
       if (typeof fieldValue === 'object' && fieldValue !== null) {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,21 +34,22 @@ const SermonEditor = () => {
   const { language } = useLanguage();
   const queryClient = useQueryClient();
   
-  // Fetch sermons from Supabase
   const { data: sermons, isLoading, error } = useQuery({
     queryKey: ['sermons'],
     queryFn: async () => {
-      const response = await supabase
-        .from('sermons')
-        .select('*')
-        .order('date', { ascending: false });
-      
-      if (response.error) throw response.error;
-      return response.data || [];
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('sermons')
+          .select('*')
+          .order('date', { ascending: false })
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(response.data || []);
+          });
+      });
     }
   });
 
-  // Show error toast if there's an error
   React.useEffect(() => {
     if (error) {
       toast({
@@ -60,16 +60,18 @@ const SermonEditor = () => {
     }
   }, [error, toast]);
 
-  // Add sermon mutation
   const addSermonMutation = useMutation({
     mutationFn: async (sermon: Sermon) => {
-      const response = await supabase
-        .from('sermons')
-        .insert(sermon)
-        .select();
-      
-      if (response.error) throw response.error;
-      return response.data;
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('sermons')
+          .insert(sermon)
+          .select()
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(response.data);
+          });
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -88,17 +90,19 @@ const SermonEditor = () => {
     }
   });
 
-  // Update sermon mutation
   const updateSermonMutation = useMutation({
     mutationFn: async (sermon: Sermon) => {
-      const response = await supabase
-        .from('sermons')
-        .update(sermon)
-        .eq('id', sermon.id)
-        .select();
-      
-      if (response.error) throw response.error;
-      return response.data;
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('sermons')
+          .update(sermon)
+          .eq('id', sermon.id)
+          .select()
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(response.data);
+          });
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -117,16 +121,18 @@ const SermonEditor = () => {
     }
   });
 
-  // Delete sermon mutation
   const deleteSermonMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await supabase
-        .from('sermons')
-        .delete()
-        .eq('id', id);
-      
-      if (response.error) throw response.error;
-      return id;
+      return new Promise((resolve, reject) => {
+        supabase
+          .from('sermons')
+          .delete()
+          .eq('id', id)
+          .then((response) => {
+            if (response.error) reject(response.error);
+            else resolve(id);
+          });
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -196,7 +202,6 @@ const SermonEditor = () => {
     if (!currentSermon) return;
     
     if (lang) {
-      // Fix: Ensure we're dealing with objects when spreading
       const fieldValue = currentSermon[field as keyof typeof currentSermon];
       
       if (typeof fieldValue === 'object' && fieldValue !== null) {
