@@ -2,7 +2,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.88e8f1119bd7477393fdca74580f44ea',
+  appId: 'com.lukebarnabas.connect',
   appName: 'luke-barnabas-connect',
   webDir: 'dist',
   server: {
