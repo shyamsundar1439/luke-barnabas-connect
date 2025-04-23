@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
+import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -12,13 +13,23 @@ const Index = () => {
       const { error } = await supabase.from('_tests').select('*').limit(1);
       if (error) {
         console.error('Supabase connection check:', error);
-        alert('Connected to Supabase, but no tables yet. Create some tables to start using the database!');
+        toast({
+          title: "Connected to Supabase",
+          description: "Connected to Supabase, but no tables yet. Create some tables to start using the database!",
+        });
       } else {
-        alert('Successfully connected to Supabase!');
+        toast({
+          title: "Success",
+          description: "Successfully connected to Supabase!",
+        });
       }
     } catch (err) {
       console.error('Error checking Supabase:', err);
-      alert('Error checking Supabase connection. Check console for details.');
+      toast({
+        title: "Error",
+        description: "Error checking Supabase connection. Check console for details.",
+        variant: "destructive",
+      });
     }
   };
 
