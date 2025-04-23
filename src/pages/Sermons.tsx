@@ -54,16 +54,16 @@ const translations = {
 };
 
 const fetchSermons = async (): Promise<Sermon[]> => {
-  const response = await supabase
+  const { data, error } = await supabase
     .from('sermons')
     .select('*')
     .order('date', { ascending: false });
     
-  if (response.error) {
-    throw response.error;
+  if (error) {
+    throw error;
   }
   
-  return response.data || [];
+  return data || [];
 };
 
 const Sermons = () => {

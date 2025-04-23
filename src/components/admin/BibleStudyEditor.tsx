@@ -38,31 +38,31 @@ const BibleStudyEditor = () => {
   const { data: meetings, isLoading } = useQuery({
     queryKey: ['bible-studies'],
     queryFn: async (): Promise<BibleStudyMeeting[]> => {
-      const response = await supabase
+      const { data, error } = await supabase
         .from('bible_studies')
         .select('*')
         .order('date', { ascending: true });
         
-      if (response.error) {
-        throw response.error;
+      if (error) {
+        throw error;
       }
       
-      return response.data || [];
+      return data || [];
     }
   });
 
   const addMeetingMutation = useMutation({
     mutationFn: async (meeting: BibleStudyMeeting): Promise<BibleStudyMeeting[]> => {
-      const response = await supabase
+      const { data, error } = await supabase
         .from('bible_studies')
         .insert(meeting)
         .select();
         
-      if (response.error) {
-        throw response.error;
+      if (error) {
+        throw error;
       }
       
-      return response.data || [];
+      return data || [];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -83,17 +83,17 @@ const BibleStudyEditor = () => {
 
   const updateMeetingMutation = useMutation({
     mutationFn: async (meeting: BibleStudyMeeting): Promise<BibleStudyMeeting[]> => {
-      const response = await supabase
+      const { data, error } = await supabase
         .from('bible_studies')
         .update(meeting)
         .eq('id', meeting.id)
         .select();
         
-      if (response.error) {
-        throw response.error;
+      if (error) {
+        throw error;
       }
       
-      return response.data || [];
+      return data || [];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -114,16 +114,14 @@ const BibleStudyEditor = () => {
 
   const deleteMeetingMutation = useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      const response = await supabase
+      const { error } = await supabase
         .from('bible_studies')
         .delete()
         .eq('id', id);
         
-      if (response.error) {
-        throw response.error;
+      if (error) {
+        throw error;
       }
-      
-      return;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });

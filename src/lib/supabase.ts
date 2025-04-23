@@ -18,27 +18,30 @@ export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : {
       from: (table: string) => ({
-        select: () => ({
-          order: () => ({
-            then: (callback: any) => Promise.resolve(callback({ data: [], error: null })),
+        select: () => {
+          const response = {
             data: [],
-            error: null
-          }),
-          eq: () => ({
-            select: () => Promise.resolve({ data: [], error: null })
-          }),
-          delete: () => ({
-            eq: () => Promise.resolve({ data: null, error: null })
-          }),
-          insert: () => ({
-            select: () => Promise.resolve({ data: [], error: null })
-          }),
-          update: () => ({
+            error: null,
+            then: undefined as any
+          };
+          return {
+            order: () => Promise.resolve(response),
             eq: () => ({
-              select: () => Promise.resolve({ data: [], error: null })
+              select: () => Promise.resolve(response)
+            }),
+            delete: () => ({
+              eq: () => Promise.resolve({ data: null, error: null })
+            }),
+            insert: () => ({
+              select: () => Promise.resolve(response)
+            }),
+            update: () => ({
+              eq: () => ({
+                select: () => Promise.resolve(response)
+              })
             })
-          })
-        }),
+          };
+        },
         insert: () => ({
           select: () => Promise.resolve({ data: [], error: null })
         }),
@@ -50,11 +53,7 @@ export const supabase = supabaseUrl && supabaseAnonKey
         delete: () => ({
           eq: () => Promise.resolve({ data: null, error: null })
         }),
-        order: () => ({
-          then: (callback: any) => Promise.resolve(callback({ data: [], error: null })),
-          data: [],
-          error: null
-        })
+        order: () => Promise.resolve({ data: [], error: null })
       }),
       storage: {
         from: () => ({
