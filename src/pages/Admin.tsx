@@ -6,15 +6,40 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Lock } from 'lucide-react';
 
+// This is a simple hash function. In a real app, you'd use a proper crypto library
+const hashPassword = (password: string) => {
+  let hash = 0;
+  for (let i = 0; i < password.length; i++) {
+    const char = password.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString();
+};
+
 const Admin = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Simple authentication - in a real app, this would use secure auth
+  // You should set your admin password here
+  const setupAdminPassword = () => {
+    const yourPassword = "YOUR_SECURE_PASSWORD"; // Replace this with your desired password
+    localStorage.setItem('adminHash', hashPassword(yourPassword));
+  };
+
+  // Call this once to set up your password
+  React.useEffect(() => {
+    if (!localStorage.getItem('adminHash')) {
+      setupAdminPassword();
+    }
+  }, []);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin123') {  // This is just for demo purposes
+    const storedHash = localStorage.getItem('adminHash');
+    
+    if (hashPassword(password) === storedHash) {
       localStorage.setItem('isAdmin', 'true');
       navigate('/admin-dashboard');
       toast({
@@ -62,10 +87,6 @@ const Admin = () => {
           >
             Login
           </Button>
-          
-          <div className="text-center text-xs text-gray-500 dark:text-gray-400">
-            <p>For demo purposes, use password: admin123</p>
-          </div>
         </form>
       </div>
     </div>
