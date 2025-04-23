@@ -55,15 +55,22 @@ const Sermons = () => {
   const { data: sermons, isLoading, error } = useQuery({
     queryKey: ['sermons'],
     queryFn: fetchSermons,
-    onError: (err) => {
-      console.error('Error fetching sermons:', err);
+    meta: {
+      errorMessage: t.error
+    }
+  });
+  
+  // Show error toast if there's an error
+  React.useEffect(() => {
+    if (error) {
+      console.error('Error fetching sermons:', error);
       toast({
         title: t.error,
-        description: err.message,
+        description: error.message,
         variant: "destructive",
       });
     }
-  });
+  }, [error, t.error, toast]);
   
   // Filter sermons based on search query
   const filteredSermons = React.useMemo(() => {

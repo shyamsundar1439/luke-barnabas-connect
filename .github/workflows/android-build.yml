@@ -21,13 +21,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build web app
+      - name: Create environment file
         run: |
-          npm run build
           cat > .env.production << EOL
           VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
           EOL
+
+      - name: Build web app
+        run: npm run build
 
       - name: Set up JDK
         uses: actions/setup-java@v3

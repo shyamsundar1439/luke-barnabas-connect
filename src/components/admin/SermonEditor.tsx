@@ -36,7 +36,7 @@ const SermonEditor = () => {
   const queryClient = useQueryClient();
   
   // Fetch sermons from Supabase
-  const { data: sermons, isLoading } = useQuery({
+  const { data: sermons, isLoading, error } = useQuery({
     queryKey: ['sermons'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,6 +48,17 @@ const SermonEditor = () => {
       return data;
     }
   });
+
+  // Show error toast if there's an error
+  React.useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error fetching sermons",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   // Add sermon mutation
   const addSermonMutation = useMutation({
