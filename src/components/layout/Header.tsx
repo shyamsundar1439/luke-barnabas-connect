@@ -32,8 +32,12 @@ const Header = ({ language = "te", isLive = false }: HeaderProps) => {
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           {/* App logo */}
-          <div className="w-10 h-10 rounded-full bg-lb-gold flex items-center justify-center mr-2 text-white font-bold">
-            LB
+          <div className="w-10 h-10 rounded-full flex items-center justify-center mr-2">
+            <img 
+              src="/lovable-uploads/7cfd9ad6-ea52-47e9-ad42-be6f1f4a9401.png" 
+              alt="Luke Barnabas Ministry Logo"
+              className="w-8 h-8 object-contain"
+            />
           </div>
           <h1 className="text-lg font-semibold text-lb-blue-dark">{t.appName}</h1>
         </div>
