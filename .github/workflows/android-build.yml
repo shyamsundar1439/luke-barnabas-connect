@@ -47,8 +47,9 @@ jobs:
 
       - name: Update Gradle properties
         run: |
-          echo "org.gradle.java.home=/usr/lib/jvm/zulu-17-amd64" >> android/gradle.properties
           echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> android/gradle.properties
+          # Using JAVA_HOME environment variable instead of hardcoded path
+          echo "org.gradle.java.home=$JAVA_HOME" >> android/gradle.properties
 
       - name: Build APK
         run: |
