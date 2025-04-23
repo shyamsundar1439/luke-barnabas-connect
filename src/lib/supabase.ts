@@ -68,5 +68,5 @@ export const supabase = supabaseUrl && supabaseAnonKey
           signIn: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
           signOut: () => ({ then: (callback: any) => callback({ error: null }) })
         }
-      }
+      })
     };
