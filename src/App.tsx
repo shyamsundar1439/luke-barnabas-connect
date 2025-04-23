@@ -17,8 +17,13 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard";
 
+// Import debug components
+import EnvDebug from "./components/debug/EnvDebug";
+
 // Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient();
+
+const isDev = import.meta.env.MODE === 'development';
 
 const App = () => (
   <React.StrictMode>
@@ -39,6 +44,7 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              {isDev && <EnvDebug />}
             </BrowserRouter>
           </TooltipProvider>
         </LanguageProvider>
