@@ -36,13 +36,13 @@ const translations = {
 };
 
 const fetchSermons = async () => {
-  const { data, error } = await supabase
+  const response = await supabase
     .from('sermons')
     .select('*')
     .order('date', { ascending: false });
     
-  if (error) throw error;
-  return data;
+  if (response.error) throw response.error;
+  return response.data || [];
 };
 
 const Sermons = () => {

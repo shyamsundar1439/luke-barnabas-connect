@@ -20,27 +20,27 @@ export const supabase = supabaseUrl && supabaseAnonKey
       from: () => ({
         select: () => ({
           order: () => ({
-            then: () => Promise.resolve({ data: [], error: null }),
+            then: (callback: any) => callback({ data: [], error: null }),
             data: [],
             error: null
           }),
           eq: () => ({
             select: () => ({
-              then: () => Promise.resolve({ data: [], error: null }),
+              then: (callback: any) => callback({ data: [], error: null }),
               data: [],
               error: null
             })
           }),
           delete: () => ({
             eq: () => ({
-              then: () => Promise.resolve({ data: null, error: null }),
+              then: (callback: any) => callback({ data: null, error: null }),
               data: null, 
               error: null
             })
           }),
           insert: () => ({
             select: () => ({
-              then: () => Promise.resolve({ data: [], error: null }),
+              then: (callback: any) => callback({ data: [], error: null }),
               data: [],
               error: null
             })
@@ -48,7 +48,7 @@ export const supabase = supabaseUrl && supabaseAnonKey
           update: () => ({
             eq: () => ({
               select: () => ({
-                then: () => Promise.resolve({ data: [], error: null }),
+                then: (callback: any) => callback({ data: [], error: null }),
                 data: [],
                 error: null
               })
@@ -58,15 +58,15 @@ export const supabase = supabaseUrl && supabaseAnonKey
         storage: {
           from: () => ({
             upload: () => ({
-              then: () => Promise.resolve({ data: null, error: null })
+              then: (callback: any) => callback({ data: null, error: null })
             }),
             getPublicUrl: () => ({ data: { publicUrl: '' } })
           })
         },
         auth: {
-          signUp: () => Promise.resolve({ data: null, error: null }),
-          signIn: () => Promise.resolve({ data: null, error: null }),
-          signOut: () => Promise.resolve({ error: null })
+          signUp: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
+          signIn: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
+          signOut: () => ({ then: (callback: any) => callback({ error: null }) })
         }
-      })
+      }
     };

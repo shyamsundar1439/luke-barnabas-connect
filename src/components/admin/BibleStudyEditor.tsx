@@ -40,26 +40,26 @@ const BibleStudyEditor = () => {
   const { data: meetings, isLoading } = useQuery({
     queryKey: ['bible-studies'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const response = await supabase
         .from('bible_studies')
         .select('*')
         .order('date', { ascending: true });
       
-      if (error) throw error;
-      return data;
+      if (response.error) throw response.error;
+      return response.data || [];
     }
   });
 
   // Add meeting mutation
   const addMeetingMutation = useMutation({
     mutationFn: async (meeting: BibleStudyMeeting) => {
-      const { data, error } = await supabase
+      const response = await supabase
         .from('bible_studies')
         .insert(meeting)
         .select();
       
-      if (error) throw error;
-      return data;
+      if (response.error) throw response.error;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -81,14 +81,14 @@ const BibleStudyEditor = () => {
   // Update meeting mutation
   const updateMeetingMutation = useMutation({
     mutationFn: async (meeting: BibleStudyMeeting) => {
-      const { data, error } = await supabase
+      const response = await supabase
         .from('bible_studies')
         .update(meeting)
         .eq('id', meeting.id)
         .select();
       
-      if (error) throw error;
-      return data;
+      if (response.error) throw response.error;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -110,12 +110,12 @@ const BibleStudyEditor = () => {
   // Delete meeting mutation
   const deleteMeetingMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const response = await supabase
         .from('bible_studies')
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (response.error) throw response.error;
       return id;
     },
     onSuccess: () => {

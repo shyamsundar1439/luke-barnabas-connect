@@ -39,13 +39,13 @@ const SermonEditor = () => {
   const { data: sermons, isLoading, error } = useQuery({
     queryKey: ['sermons'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const response = await supabase
         .from('sermons')
         .select('*')
         .order('date', { ascending: false });
       
-      if (error) throw error;
-      return data;
+      if (response.error) throw response.error;
+      return response.data || [];
     }
   });
 
@@ -63,13 +63,13 @@ const SermonEditor = () => {
   // Add sermon mutation
   const addSermonMutation = useMutation({
     mutationFn: async (sermon: Sermon) => {
-      const { data, error } = await supabase
+      const response = await supabase
         .from('sermons')
         .insert(sermon)
         .select();
       
-      if (error) throw error;
-      return data;
+      if (response.error) throw response.error;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -91,14 +91,14 @@ const SermonEditor = () => {
   // Update sermon mutation
   const updateSermonMutation = useMutation({
     mutationFn: async (sermon: Sermon) => {
-      const { data, error } = await supabase
+      const response = await supabase
         .from('sermons')
         .update(sermon)
         .eq('id', sermon.id)
         .select();
       
-      if (error) throw error;
-      return data;
+      if (response.error) throw response.error;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -120,12 +120,12 @@ const SermonEditor = () => {
   // Delete sermon mutation
   const deleteSermonMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const response = await supabase
         .from('sermons')
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (response.error) throw response.error;
       return id;
     },
     onSuccess: () => {
