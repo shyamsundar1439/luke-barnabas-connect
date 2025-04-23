@@ -1,69 +1,15 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Get environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Use hardcoded values from the Supabase integration if environment variables are not available
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://ptzwnprsstihjuugstpx.supabase.co";
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0enducHJzc3RpaGp1dWdzdHB4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MjIwMzcsImV4cCI6MjA2MDk5ODAzN30.0o6KXEEIGouIg9q_OjWMulSVIhi4tW7XYwY4oPIwLa4";
 
-// Check if environment variables are present
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error(
-    'Missing Supabase environment variables. Make sure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set.'
-  );
-}
-
-// Create a fallback Supabase client for development that doesn't throw errors
-// but will log warnings and return empty responses
-export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : {
-      from: (table: string) => ({
-        select: () => {
-          const response = {
-            data: [],
-            error: null,
-            then: undefined as any
-          };
-          return {
-            order: () => Promise.resolve(response),
-            eq: () => ({
-              select: () => Promise.resolve(response)
-            }),
-            delete: () => ({
-              eq: () => Promise.resolve({ data: null, error: null })
-            }),
-            insert: () => ({
-              select: () => Promise.resolve(response)
-            }),
-            update: () => ({
-              eq: () => ({
-                select: () => Promise.resolve(response)
-              })
-            })
-          };
-        },
-        insert: () => ({
-          select: () => Promise.resolve({ data: [], error: null })
-        }),
-        update: () => ({
-          eq: () => ({
-            select: () => Promise.resolve({ data: [], error: null })
-          })
-        }),
-        delete: () => ({
-          eq: () => Promise.resolve({ data: null, error: null })
-        }),
-        order: () => Promise.resolve({ data: [], error: null })
-      }),
-      storage: {
-        from: () => ({
-          upload: () => Promise.resolve({ data: null, error: null }),
-          getPublicUrl: () => ({ data: { publicUrl: '' } })
-        })
-      },
-      auth: {
-        signUp: () => Promise.resolve({ data: null, error: null }),
-        signIn: () => Promise.resolve({ data: null, error: null }),
-        signOut: () => Promise.resolve({ error: null })
-      }
-    };
+// Create the Supabase client with the available credentials
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+});
