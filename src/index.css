@@ -98,4 +98,92 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Custom fonts for Luke Barnabas app */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Telugu:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;600;700&display=swap');
+  
+  /* Default font setup */
+  html {
+    font-family: 'Roboto', 'Noto Sans Telugu', 'Noto Sans', sans-serif;
+  }
+}
+
+@layer components {
+  .app-container {
+    @apply h-screen w-full flex flex-col bg-lb-white overflow-hidden;
+  }
+  
+  .page-container {
+    @apply flex-1 overflow-y-auto p-4 pb-24;
+  }
+  
+  .nav-tab {
+    @apply flex flex-col items-center justify-center text-xs font-medium;
+  }
+  
+  .nav-icon {
+    @apply w-6 h-6 mb-1;
+  }
+  
+  .nav-active {
+    @apply text-lb-gold-dark;
+  }
+  
+  .nav-inactive {
+    @apply text-lb-neutral;
+  }
+  
+  .content-card {
+    @apply bg-white rounded-lg shadow-md p-4 mb-4 border border-lb-blue-light;
+  }
+  
+  .section-title {
+    @apply text-xl font-semibold mb-4 text-lb-blue-dark;
+  }
+  
+  .btn-primary {
+    @apply bg-lb-blue text-white py-2 px-4 rounded-md hover:bg-lb-blue-dark transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-lb-gold text-lb-blue-dark py-2 px-4 rounded-md hover:bg-lb-gold-dark hover:text-white transition-colors;
+  }
+  
+  .language-badge {
+    @apply px-2 py-1 text-xs rounded-full bg-lb-offwhite text-lb-neutral mr-2;
+  }
+  
+  .language-active {
+    @apply bg-lb-gold-light text-lb-gold-dark;
+  }
+}
+
+@layer utilities {
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .pulse-animation {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    0% { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
 }

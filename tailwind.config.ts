@@ -61,7 +61,26 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Luke Barnabas Christian Theme Colors
+				lb: {
+					blue: {
+						light: '#D3E4FD',
+						DEFAULT: '#33C3F0',
+						dark: '#2980b9',
+					},
+					gold: {
+						light: '#FEF7CD',
+						DEFAULT: '#FFD700',
+						dark: '#B8860B',
+					},
+					neutral: '#8E9196',
+					white: '#FFFFFF',
+					offwhite: '#F1F0FB',
+					lightgray: '#f3f3f3',
+					peach: '#FDE1D3',
+					pink: '#FFDEE2',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
