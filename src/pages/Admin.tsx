@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ const Admin = () => {
 
   // You should set your admin password here
   const setupAdminPassword = () => {
-    const yourPassword = "YOUR_SECURE_PASSWORD"; // Replace this with your desired password
+    const yourPassword = "Bhuvi...777"; // Updated with the provided password
     localStorage.setItem('adminHash', hashPassword(yourPassword));
   };
 
