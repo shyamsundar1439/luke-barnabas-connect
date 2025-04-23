@@ -52,43 +52,43 @@
   }
 
   &.dark {
-    /* Enhanced contrast for dark mode */
+    /* Enhanced contrast for dark mode with focus on content */
     color-scheme: dark;
-    --text-primary: 210 40% 98%; /* Lighter text for better readability */
-    --text-secondary: 215 20.2% 65.1%; /* Slightly muted but still readable */
+    --text-primary: 0 0% 100%; /* Pure white text for maximum readability */
+    --text-secondary: 210 40% 90%; /* Very light text for secondary content */
     --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --foreground: 0 0% 100%; /* Pure white for text */
 
     --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card-foreground: 0 0% 100%;
 
     --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 210 40% 98%;
+    --primary: 0 0% 100%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 75.1%; /* Lighter muted text */
 
     --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
     --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 224.3 76.3% 60%; /* Brighter primary for sidebar */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
@@ -113,18 +113,32 @@
 }
 
 @layer components {
-  /* Enhance text visibility in dark mode */
+  /* Enhance text visibility in dark mode with focus on content */
   .dark .content-card {
     @apply bg-lb-offwhite text-lb-white border-lb-lightgray;
   }
 
   .dark .section-title {
-    @apply text-lb-white; /* Ensure section titles are visible */
+    @apply text-white font-bold; /* Bolder and pure white for maximum visibility */
   }
 
-  .dark a {
-    @apply text-lb-blue-light hover:text-lb-blue; /* Improved link visibility */
+  .dark a, .dark button {
+    @apply text-lb-blue-light hover:text-white transition-colors; /* Brighter blue and hover to white */
   }
+  
+  /* Highlight content in dark mode */
+  .dark .sermon-title {
+    @apply text-white text-lg font-semibold;
+  }
+  
+  .dark .sermon-summary {
+    @apply text-gray-100;
+  }
+  
+  .dark .language-badge.language-active {
+    @apply bg-lb-blue-light text-white border border-white/20;
+  }
+  
   .app-container {
     @apply h-screen w-full flex flex-col bg-lb-white overflow-hidden;
   }

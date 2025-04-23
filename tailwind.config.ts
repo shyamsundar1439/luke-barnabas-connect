@@ -55,7 +55,7 @@ export default {
         },
         lb: {
           blue: {
-            light: '#4A90E2', // Brightened for better contrast
+            light: '#60A5FA', // Even brighter blue for dark mode
             DEFAULT: '#2563EB', // Kept same
             dark: '#1D4ED8', // Kept same
           },
@@ -65,7 +65,7 @@ export default {
             dark: '#B45309',
           },
           neutral: '#A0AEC0', // Lightened for better readability in dark mode
-          white: '#F1F1F1', // Light gray for text in dark mode
+          white: '#FFFFFF', // Pure white for maximum contrast in dark mode
           offwhite: '#374151', // Slightly lighter background
           lightgray: '#4B5563', // Adjusted for dark mode
           peach: '#C2410C', // Adjusted for dark mode contrast

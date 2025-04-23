@@ -47,8 +47,8 @@ const SermonCard = ({ sermon }: SermonCardProps) => {
           </div>
         </div>
         <div className="flex-1">
-          <h3 className="font-medium text-lb-blue-dark">{sermon.title[language]}</h3>
-          <p className="text-xs text-lb-neutral">{sermon.date}</p>
+          <h3 className="font-medium text-lb-blue-dark dark:text-white sermon-title">{sermon.title[language]}</h3>
+          <p className="text-xs text-lb-neutral dark:text-gray-300">{sermon.date}</p>
           <div className="flex mt-1">
             {Object.keys(sermon.summary).map((lang) => (
               <span 
@@ -66,12 +66,12 @@ const SermonCard = ({ sermon }: SermonCardProps) => {
         </div>
       </div>
       
-      <div className={`mt-2 text-sm ${expanded ? '' : 'line-clamp-3'}`}>
+      <div className={`mt-2 text-sm dark:text-gray-200 sermon-summary ${expanded ? '' : 'line-clamp-3'}`}>
         {sermon.summary[language]}
       </div>
       
       <button 
-        className="text-xs text-lb-blue mt-1 font-medium hover:underline focus:outline-none"
+        className="text-xs text-lb-blue mt-1 font-medium hover:underline focus:outline-none dark:text-lb-blue-light dark:hover:text-white"
         onClick={() => setExpanded(!expanded)}
       >
         {expanded ? 

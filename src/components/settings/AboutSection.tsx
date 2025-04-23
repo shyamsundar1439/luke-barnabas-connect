@@ -17,22 +17,22 @@ const AboutSection = ({ handleShareApp }: AboutSectionProps) => {
       <h2 className="section-title">{t.about}</h2>
       
       <div className="space-y-4">
-        <div className="flex items-center justify-between text-lb-neutral dark:text-lb-white">
+        <div className="flex items-center justify-between text-lb-neutral dark:text-white">
           <span>{t.version}</span>
-          <span className="dark:text-lb-white">1.0.0</span>
+          <span className="dark:text-white">1.0.0</span>
         </div>
         
         <button 
           onClick={handleShareApp}
-          className="flex items-center text-lb-blue hover:text-lb-blue-dark dark:text-lb-blue-light dark:hover:text-lb-blue"
+          className="flex items-center text-lb-blue hover:text-lb-blue-dark dark:text-lb-blue-light dark:hover:text-white"
         >
-          <Share className="w-4 h-4 mr-2 dark:text-lb-white" />
+          <Share className="w-4 h-4 mr-2 dark:text-white" />
           {t.shareApp}
         </button>
         
         <a 
           href="mailto:support@lukebarnabas.com" 
-          className="block text-lb-blue hover:text-lb-blue-dark dark:text-lb-blue-light dark:hover:text-lb-blue"
+          className="block text-lb-blue hover:text-lb-blue-dark dark:text-lb-blue-light dark:hover:text-white"
         >
           {t.feedback}
         </a>
