@@ -1,48 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { PlusCircle, Edit, Trash } from 'lucide-react';
+import { PlusCircle, Edit, Trash, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLanguage } from '@/contexts/LanguageContext';
-
-// Mock sermon data - in a real app, this would come from an API/database
-const initialSermons = [
-  {
-    id: "1",
-    title: {
-      en: "The Power of Faith",
-      te: "విశ్వాసం యొక్క శక్తి",
-      hi: "विश्वास की शक्ति"
-    },
-    summary: {
-      en: "Exploring how faith can move mountains in our daily lives.",
-      te: "మన నిత్య జీవితంలో విశ్వాసం ఎలా పర్వతాలను కదిలించగలదో అన్వేషించడం.",
-      hi: "खोजना कि कैसे विश्वास हमारे दैनिक जीवन में पहाड़ों को हिला सकता है।"
-    },
-    videoId: "12345",
-    thumbnailUrl: "https://source.unsplash.com/random/640x360/?church",
-    date: "April 22, 2025"
-  },
-  {
-    id: "2",
-    title: {
-      en: "Walking in Love",
-      te: "ప్రేమలో నడుస్తున్నది",
-      hi: "प्रेम में चलना"
-    },
-    summary: {
-      en: "Understanding the depth of God's love and how to share it with others.",
-      te: "దేవుని ప్రేమ యొక్క లోతును మరియు దానిని ఇతరులతో ఎలా పంచుకోవాలో అర్థం చేసుకోవడం.",
-      hi: "ईश्वर के प्रेम की गहराई को समझना और उसे दूसरों के साथ कैसे साझा करना है।"
-    },
-    videoId: "67890",
-    thumbnailUrl: "https://source.unsplash.com/random/640x360/?bible",
-    date: "April 15, 2025"
-  }
-];
+import { supabase } from '@/lib/supabase';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Sermon {
   id: string;
@@ -62,12 +28,110 @@ interface Sermon {
 }
 
 const SermonEditor = () => {
-  const [sermons, setSermons] = useState<Sermon[]>(initialSermons);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentSermon, setCurrentSermon] = useState<Sermon | null>(null);
   const { toast } = useToast();
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
+  
+  // Fetch sermons from Supabase
+  const { data: sermons, isLoading } = useQuery({
+    queryKey: ['sermons'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sermons')
+        .select('*')
+        .order('date', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Add sermon mutation
+  const addSermonMutation = useMutation({
+    mutationFn: async (sermon: Sermon) => {
+      const { data, error } = await supabase
+        .from('sermons')
+        .insert(sermon)
+        .select();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sermons'] });
+      toast({
+        title: "Sermon added",
+        description: "The sermon has been added successfully",
+      });
+      setIsDialogOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error adding sermon",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Update sermon mutation
+  const updateSermonMutation = useMutation({
+    mutationFn: async (sermon: Sermon) => {
+      const { data, error } = await supabase
+        .from('sermons')
+        .update(sermon)
+        .eq('id', sermon.id)
+        .select();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sermons'] });
+      toast({
+        title: "Sermon updated",
+        description: "The sermon has been updated successfully",
+      });
+      setIsDialogOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error updating sermon",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete sermon mutation
+  const deleteSermonMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('sermons')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sermons'] });
+      toast({
+        title: "Sermon deleted",
+        description: "The sermon has been deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error deleting sermon",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   const resetForm = () => {
     setCurrentSermon({
@@ -94,11 +158,7 @@ const SermonEditor = () => {
 
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this sermon?")) {
-      setSermons(sermons.filter(sermon => sermon.id !== id));
-      toast({
-        title: "Sermon deleted",
-        description: "The sermon has been deleted successfully",
-      });
+      deleteSermonMutation.mutate(id);
     }
   };
 
@@ -115,20 +175,10 @@ const SermonEditor = () => {
     }
     
     if (isEditMode) {
-      setSermons(sermons.map(sermon => sermon.id === currentSermon.id ? currentSermon : sermon));
-      toast({
-        title: "Sermon updated",
-        description: "The sermon has been updated successfully",
-      });
+      updateSermonMutation.mutate(currentSermon);
     } else {
-      setSermons([...sermons, currentSermon]);
-      toast({
-        title: "Sermon added",
-        description: "The sermon has been added successfully",
-      });
+      addSermonMutation.mutate(currentSermon);
     }
-    
-    setIsDialogOpen(false);
   };
 
   const handleFormChange = (field: string, value: string, lang?: string) => {
@@ -165,37 +215,51 @@ const SermonEditor = () => {
         </Button>
       </div>
       
-      <div className="space-y-4">
-        {sermons.map(sermon => (
-          <div 
-            key={sermon.id} 
-            className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex justify-between items-start"
-          >
-            <div>
-              <h3 className="font-semibold">{sermon.title[language]}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-300">
-                {sermon.date} | Video ID: {sermon.videoId}
-              </p>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <span>Loading sermons...</span>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {sermons && sermons.map((sermon: Sermon) => (
+            <div 
+              key={sermon.id} 
+              className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex justify-between items-start"
+            >
+              <div>
+                <h3 className="font-semibold">{sermon.title[language]}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-300">
+                  {sermon.date} | Video ID: {sermon.videoId}
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleEdit(sermon)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => handleDelete(sermon.id)}
+                  disabled={deleteSermonMutation.isPending}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="flex space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => handleEdit(sermon)}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={() => handleDelete(sermon.id)}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
+          ))}
+          
+          {sermons && sermons.length === 0 && (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              No sermons found. Add your first sermon using the button above.
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
+      )}
       
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
@@ -310,7 +374,13 @@ const SermonEditor = () => {
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>
+            <Button 
+              onClick={handleSave}
+              disabled={addSermonMutation.isPending || updateSermonMutation.isPending}
+            >
+              {(addSermonMutation.isPending || updateSermonMutation.isPending) && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Save
             </Button>
           </DialogFooter>

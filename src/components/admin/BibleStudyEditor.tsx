@@ -3,49 +3,11 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Calendar, PlusCircle, Edit, Trash } from 'lucide-react';
+import { Calendar, PlusCircle, Edit, Trash, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLanguage } from '@/contexts/LanguageContext';
-
-// Mock bible study data
-const initialMeetings = [
-  {
-    id: "1",
-    title: {
-      en: "Book of John Study",
-      te: "జాన్ పుస్తకం అధ్యయనం",
-      hi: "जॉन की पुस्तक का अध्ययन"
-    },
-    date: "April 23, 2025",
-    time: "7:00 PM - 8:30 PM",
-    zoomLink: "https://zoom.us/j/123456789",
-    locationName: {
-      en: "Community Church, Main Hall",
-      te: "కమ్యూనిటీ చర్చి, మెయిన్ హాల్",
-      hi: "कम्युनिटी चर्च, मुख्य हॉल"
-    },
-    latitude: 17.385,
-    longitude: 78.4867
-  },
-  {
-    id: "2",
-    title: {
-      en: "Psalms Bible Study",
-      te: "కీర్తనలు బైబిల్ స్టడీ",
-      hi: "भजन बाइबिल अध्ययन"
-    },
-    date: "April 24, 2025",
-    time: "7:00 PM - 8:30 PM",
-    zoomLink: "https://zoom.us/j/987654321",
-    locationName: {
-      en: "Online Meeting",
-      te: "ఆన్లైన్ మీటింగ్",
-      hi: "ऑनलाइन मीटिंग"
-    },
-    latitude: 17.385,
-    longitude: 78.4867
-  }
-];
+import { supabase } from '@/lib/supabase';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface BibleStudyMeeting {
   id: string;
@@ -67,12 +29,110 @@ interface BibleStudyMeeting {
 }
 
 const BibleStudyEditor = () => {
-  const [meetings, setMeetings] = useState<BibleStudyMeeting[]>(initialMeetings);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentMeeting, setCurrentMeeting] = useState<BibleStudyMeeting | null>(null);
   const { toast } = useToast();
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
+  
+  // Fetch bible study meetings from Supabase
+  const { data: meetings, isLoading } = useQuery({
+    queryKey: ['bible-studies'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bible_studies')
+        .select('*')
+        .order('date', { ascending: true });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Add meeting mutation
+  const addMeetingMutation = useMutation({
+    mutationFn: async (meeting: BibleStudyMeeting) => {
+      const { data, error } = await supabase
+        .from('bible_studies')
+        .insert(meeting)
+        .select();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
+      toast({
+        title: "Meeting added",
+        description: "The Bible study meeting has been added successfully"
+      });
+      setIsDialogOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error adding meeting",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Update meeting mutation
+  const updateMeetingMutation = useMutation({
+    mutationFn: async (meeting: BibleStudyMeeting) => {
+      const { data, error } = await supabase
+        .from('bible_studies')
+        .update(meeting)
+        .eq('id', meeting.id)
+        .select();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
+      toast({
+        title: "Meeting updated",
+        description: "The Bible study meeting has been updated successfully"
+      });
+      setIsDialogOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error updating meeting",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete meeting mutation
+  const deleteMeetingMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('bible_studies')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
+      toast({
+        title: "Meeting deleted",
+        description: "The Bible study meeting has been deleted successfully"
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error deleting meeting",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   const resetForm = () => {
     setCurrentMeeting({
@@ -101,11 +161,7 @@ const BibleStudyEditor = () => {
 
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this meeting?")) {
-      setMeetings(meetings.filter(meeting => meeting.id !== id));
-      toast({
-        title: "Meeting deleted",
-        description: "The Bible study meeting has been deleted successfully"
-      });
+      deleteMeetingMutation.mutate(id);
     }
   };
 
@@ -122,20 +178,10 @@ const BibleStudyEditor = () => {
     }
     
     if (isEditMode) {
-      setMeetings(meetings.map(meeting => meeting.id === currentMeeting.id ? currentMeeting : meeting));
-      toast({
-        title: "Meeting updated",
-        description: "The Bible study meeting has been updated successfully"
-      });
+      updateMeetingMutation.mutate(currentMeeting);
     } else {
-      setMeetings([...meetings, currentMeeting]);
-      toast({
-        title: "Meeting added",
-        description: "The Bible study meeting has been added successfully"
-      });
+      addMeetingMutation.mutate(currentMeeting);
     }
-    
-    setIsDialogOpen(false);
   };
 
   const handleFormChange = (field: string, value: string | number, lang?: string) => {
@@ -172,41 +218,55 @@ const BibleStudyEditor = () => {
         </Button>
       </div>
       
-      <div className="space-y-4">
-        {meetings.map(meeting => (
-          <div 
-            key={meeting.id} 
-            className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex justify-between items-start"
-          >
-            <div>
-              <h3 className="font-semibold">{meeting.title[language]}</h3>
-              <div className="flex items-center text-sm text-gray-500 dark:text-gray-300">
-                <Calendar className="h-3 w-3 mr-1" />
-                <span>{meeting.date} | {meeting.time}</span>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <span>Loading meetings...</span>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {meetings && meetings.map((meeting: BibleStudyMeeting) => (
+            <div 
+              key={meeting.id} 
+              className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex justify-between items-start"
+            >
+              <div>
+                <h3 className="font-semibold">{meeting.title[language]}</h3>
+                <div className="flex items-center text-sm text-gray-500 dark:text-gray-300">
+                  <Calendar className="h-3 w-3 mr-1" />
+                  <span>{meeting.date} | {meeting.time}</span>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-300">
+                  Location: {meeting.locationName[language]}
+                </p>
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-300">
-                Location: {meeting.locationName[language]}
-              </p>
+              <div className="flex space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleEdit(meeting)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => handleDelete(meeting.id)}
+                  disabled={deleteMeetingMutation.isPending}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="flex space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => handleEdit(meeting)}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={() => handleDelete(meeting.id)}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
+          ))}
+          
+          {meetings && meetings.length === 0 && (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              No Bible study meetings found. Add your first meeting using the button above.
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
+      )}
       
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
@@ -333,7 +393,13 @@ const BibleStudyEditor = () => {
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>
+            <Button 
+              onClick={handleSave}
+              disabled={addMeetingMutation.isPending || updateMeetingMutation.isPending}
+            >
+              {(addMeetingMutation.isPending || updateMeetingMutation.isPending) && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Save
             </Button>
           </DialogFooter>
