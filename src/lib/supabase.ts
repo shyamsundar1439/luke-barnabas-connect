@@ -20,76 +20,51 @@ export const supabase = supabaseUrl && supabaseAnonKey
       from: (table: string) => ({
         select: () => ({
           order: () => ({
-            then: (callback: any) => callback({ data: [], error: null }),
+            then: (callback: any) => Promise.resolve(callback({ data: [], error: null })),
             data: [],
             error: null
           }),
           eq: () => ({
-            select: () => ({
-              then: (callback: any) => callback({ data: [], error: null }),
-              data: [],
-              error: null
-            })
+            select: () => Promise.resolve({ data: [], error: null })
           }),
           delete: () => ({
-            eq: () => ({
-              then: (callback: any) => callback({ data: null, error: null }),
-              data: null, 
-              error: null
-            })
+            eq: () => Promise.resolve({ data: null, error: null })
           }),
           insert: () => ({
-            select: () => ({
-              then: (callback: any) => callback({ data: [], error: null }),
-              data: [],
-              error: null
-            })
+            select: () => Promise.resolve({ data: [], error: null })
           }),
           update: () => ({
             eq: () => ({
-              select: () => ({
-                then: (callback: any) => callback({ data: [], error: null }),
-                data: [],
-                error: null
-              })
+              select: () => Promise.resolve({ data: [], error: null })
             })
           })
         }),
         insert: () => ({
-          select: () => ({
-            then: (callback: any) => callback({ data: [], error: null }),
-            data: [],
-            error: null
-          })
+          select: () => Promise.resolve({ data: [], error: null })
         }),
         update: () => ({
           eq: () => ({
-            select: () => ({
-              then: (callback: any) => callback({ data: [], error: null }),
-              data: [],
-              error: null
-            })
+            select: () => Promise.resolve({ data: [], error: null })
           })
         }),
         delete: () => ({
-          eq: () => ({
-            then: (callback: any) => callback({ data: null, error: null }),
-            data: null,
-            error: null
-          })
+          eq: () => Promise.resolve({ data: null, error: null })
+        }),
+        order: () => ({
+          then: (callback: any) => Promise.resolve(callback({ data: [], error: null })),
+          data: [],
+          error: null
         })
       }),
       storage: {
         from: () => ({
-          upload: () => ({
-            then: (callback: any) => callback({ data: null, error: null })
-          }),
+          upload: () => Promise.resolve({ data: null, error: null }),
           getPublicUrl: () => ({ data: { publicUrl: '' } })
         })
       },
       auth: {
-        signUp: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
-        signIn: () => ({ then: (callback: any) => callback({ data: null, error: null }) }),
-        signOut: () => ({ then: (callback: any) => callback({ error: null }) })
+        signUp: () => Promise.resolve({ data: null, error: null }),
+        signIn: () => Promise.resolve({ data: null, error: null }),
+        signOut: () => Promise.resolve({ error: null })
       }
     };

@@ -8,23 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabase';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
-interface Sermon {
-  id: string;
-  title: {
-    en: string;
-    te: string;
-    hi: string;
-  };
-  summary: {
-    en: string;
-    te: string;
-    hi: string;
-  };
-  videoId: string;
-  thumbnailUrl: string;
-  date: string;
-}
+import { Sermon } from '@/pages/Sermons';
 
 const SermonEditor = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,17 +20,17 @@ const SermonEditor = () => {
   
   const { data: sermons, isLoading, error } = useQuery({
     queryKey: ['sermons'],
-    queryFn: async () => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('sermons')
-          .select('*')
-          .order('date', { ascending: false })
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(response.data || []);
-          });
-      });
+    queryFn: async (): Promise<Sermon[]> => {
+      const response = await supabase
+        .from('sermons')
+        .select('*')
+        .order('date', { ascending: false });
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return response.data || [];
     }
   });
 
@@ -54,24 +38,24 @@ const SermonEditor = () => {
     if (error) {
       toast({
         title: "Error fetching sermons",
-        description: error.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }
   }, [error, toast]);
 
   const addSermonMutation = useMutation({
-    mutationFn: async (sermon: Sermon) => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('sermons')
-          .insert(sermon)
-          .select()
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(response.data);
-          });
-      });
+    mutationFn: async (sermon: Sermon): Promise<Sermon[]> => {
+      const response = await supabase
+        .from('sermons')
+        .insert(sermon)
+        .select();
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return response.data || [];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -84,25 +68,25 @@ const SermonEditor = () => {
     onError: (error) => {
       toast({
         title: "Error adding sermon",
-        description: error.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }
   });
 
   const updateSermonMutation = useMutation({
-    mutationFn: async (sermon: Sermon) => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('sermons')
-          .update(sermon)
-          .eq('id', sermon.id)
-          .select()
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(response.data);
-          });
-      });
+    mutationFn: async (sermon: Sermon): Promise<Sermon[]> => {
+      const response = await supabase
+        .from('sermons')
+        .update(sermon)
+        .eq('id', sermon.id)
+        .select();
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return response.data || [];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -115,24 +99,24 @@ const SermonEditor = () => {
     onError: (error) => {
       toast({
         title: "Error updating sermon",
-        description: error.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }
   });
 
   const deleteSermonMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('sermons')
-          .delete()
-          .eq('id', id)
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(id);
-          });
-      });
+    mutationFn: async (id: string): Promise<void> => {
+      const response = await supabase
+        .from('sermons')
+        .delete()
+        .eq('id', id);
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sermons'] });
@@ -144,7 +128,7 @@ const SermonEditor = () => {
     onError: (error) => {
       toast({
         title: "Error deleting sermon",
-        description: error.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }

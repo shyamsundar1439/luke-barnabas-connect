@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import SermonCard from '@/components/sermons/SermonCard';
@@ -5,6 +6,24 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
+
+// Define Sermon interface
+export interface Sermon {
+  id: string;
+  title: {
+    en: string;
+    te: string;
+    hi: string;
+  };
+  summary: {
+    en: string;
+    te: string;
+    hi: string;
+  };
+  videoId: string;
+  thumbnailUrl: string;
+  date: string;
+}
 
 // Language translations
 const translations = {
@@ -34,17 +53,17 @@ const translations = {
   }
 };
 
-const fetchSermons = async () => {
-  return new Promise((resolve, reject) => {
-    supabase
-      .from('sermons')
-      .select('*')
-      .order('date', { ascending: false })
-      .then((response) => {
-        if (response.error) reject(response.error);
-        else resolve(response.data || []);
-      });
-  });
+const fetchSermons = async (): Promise<Sermon[]> => {
+  const response = await supabase
+    .from('sermons')
+    .select('*')
+    .order('date', { ascending: false });
+    
+  if (response.error) {
+    throw response.error;
+  }
+  
+  return response.data || [];
 };
 
 const Sermons = () => {

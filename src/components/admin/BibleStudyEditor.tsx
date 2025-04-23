@@ -37,32 +37,32 @@ const BibleStudyEditor = () => {
   
   const { data: meetings, isLoading } = useQuery({
     queryKey: ['bible-studies'],
-    queryFn: async () => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('bible_studies')
-          .select('*')
-          .order('date', { ascending: true })
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(response.data || []);
-          });
-      });
+    queryFn: async (): Promise<BibleStudyMeeting[]> => {
+      const response = await supabase
+        .from('bible_studies')
+        .select('*')
+        .order('date', { ascending: true });
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return response.data || [];
     }
   });
 
   const addMeetingMutation = useMutation({
-    mutationFn: async (meeting: BibleStudyMeeting) => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('bible_studies')
-          .insert(meeting)
-          .select()
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(response.data);
-          });
-      });
+    mutationFn: async (meeting: BibleStudyMeeting): Promise<BibleStudyMeeting[]> => {
+      const response = await supabase
+        .from('bible_studies')
+        .insert(meeting)
+        .select();
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return response.data || [];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -75,25 +75,25 @@ const BibleStudyEditor = () => {
     onError: (error) => {
       toast({
         title: "Error adding meeting",
-        description: error.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }
   });
 
   const updateMeetingMutation = useMutation({
-    mutationFn: async (meeting: BibleStudyMeeting) => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('bible_studies')
-          .update(meeting)
-          .eq('id', meeting.id)
-          .select()
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(response.data);
-          });
-      });
+    mutationFn: async (meeting: BibleStudyMeeting): Promise<BibleStudyMeeting[]> => {
+      const response = await supabase
+        .from('bible_studies')
+        .update(meeting)
+        .eq('id', meeting.id)
+        .select();
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return response.data || [];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -106,24 +106,24 @@ const BibleStudyEditor = () => {
     onError: (error) => {
       toast({
         title: "Error updating meeting",
-        description: error.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }
   });
 
   const deleteMeetingMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return new Promise((resolve, reject) => {
-        supabase
-          .from('bible_studies')
-          .delete()
-          .eq('id', id)
-          .then((response) => {
-            if (response.error) reject(response.error);
-            else resolve(id);
-          });
-      });
+    mutationFn: async (id: string): Promise<void> => {
+      const response = await supabase
+        .from('bible_studies')
+        .delete()
+        .eq('id', id);
+        
+      if (response.error) {
+        throw response.error;
+      }
+      
+      return;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bible-studies'] });
@@ -135,7 +135,7 @@ const BibleStudyEditor = () => {
     onError: (error) => {
       toast({
         title: "Error deleting meeting",
-        description: error.message,
+        description: (error as Error).message,
         variant: "destructive",
       });
     }
