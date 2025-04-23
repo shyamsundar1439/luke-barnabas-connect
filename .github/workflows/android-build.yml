@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Capacitor
         run: |
-          npx cap add android --skip-appid-validation
+          npx cap add android
           npx cap sync
 
       - name: Build APK
