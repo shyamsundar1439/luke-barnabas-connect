@@ -52,6 +52,10 @@
   }
 
   &.dark {
+    /* Enhanced contrast for dark mode */
+    color-scheme: dark;
+    --text-primary: 210 40% 98%; /* Lighter text for better readability */
+    --text-secondary: 215 20.2% 65.1%; /* Slightly muted but still readable */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -109,6 +113,18 @@
 }
 
 @layer components {
+  /* Enhance text visibility in dark mode */
+  .dark .content-card {
+    @apply bg-lb-offwhite text-lb-white border-lb-lightgray;
+  }
+
+  .dark .section-title {
+    @apply text-lb-white; /* Ensure section titles are visible */
+  }
+
+  .dark a {
+    @apply text-lb-blue-light hover:text-lb-blue; /* Improved link visibility */
+  }
   .app-container {
     @apply h-screen w-full flex flex-col bg-lb-white overflow-hidden;
   }

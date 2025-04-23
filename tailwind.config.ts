@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -54,21 +55,21 @@ export default {
         },
         lb: {
           blue: {
-            light: '#1E3A8A',
-            DEFAULT: '#2563EB',
-            dark: '#1D4ED8',
+            light: '#4A90E2', // Brightened for better contrast
+            DEFAULT: '#2563EB', // Kept same
+            dark: '#1D4ED8', // Kept same
           },
           gold: {
-            light: '#92400E',
-            DEFAULT: '#D97706',
+            light: '#FFC107', // Brightened for better visibility
+            DEFAULT: '#D97706', 
             dark: '#B45309',
           },
-          neutral: '#6B7280',
-          white: '#1F2937',
-          offwhite: '#111827',
-          lightgray: '#1F2937',
-          peach: '#92400E',
-          pink: '#991B1B',
+          neutral: '#A0AEC0', // Lightened for better readability in dark mode
+          white: '#F1F1F1', // Light gray for text in dark mode
+          offwhite: '#374151', // Slightly lighter background
+          lightgray: '#4B5563', // Adjusted for dark mode
+          peach: '#C2410C', // Adjusted for dark mode contrast
+          pink: '#BE185D', // Adjusted for dark mode contrast
         },
       },
       borderRadius: {

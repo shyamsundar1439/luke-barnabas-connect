@@ -33,10 +33,10 @@ const NotificationSection = ({ notificationSettings, toggleNotification }: Notif
         {notificationItems.map(({ key, label }) => (
           <div key={key} className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-lb-blue-light flex items-center justify-center mr-3">
-                <Bell className="w-4 h-4 text-lb-blue-dark" />
+              <div className="w-8 h-8 rounded-full bg-lb-blue-light dark:bg-lb-lightgray flex items-center justify-center mr-3">
+                <Bell className="w-4 h-4 text-lb-blue-dark dark:text-lb-white" />
               </div>
-              <span>{label}</span>
+              <span className="dark:text-lb-white">{label}</span>
             </div>
             <div className="relative">
               <input 
@@ -49,7 +49,9 @@ const NotificationSection = ({ notificationSettings, toggleNotification }: Notif
               <label 
                 htmlFor={`${key}-toggle`}
                 className={`block w-12 h-6 rounded-full transition-colors duration-300 ease-in-out ${
-                  notificationSettings[key] ? 'bg-lb-blue' : 'bg-gray-300'
+                  notificationSettings[key] 
+                    ? 'bg-lb-blue dark:bg-lb-blue-light' 
+                    : 'bg-gray-300 dark:bg-lb-lightgray'
                 }`}
               >
                 <span 
