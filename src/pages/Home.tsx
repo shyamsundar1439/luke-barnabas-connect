@@ -1,76 +1,20 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import LiveStreamEmbed from '@/components/youtube/LiveStreamEmbed';
 import { useLanguage } from '@/contexts/LanguageContext';
-
-// Language translations
-const translations = {
-  en: {
-    welcomeToLB: "Welcome to Luke Barnabas Ministry",
-    watchLive: "Watch Live Sermons",
-    shareStream: "Share Stream",
-    liveBroadcast: "Live Broadcast",
-    upcomingEvent: "Upcoming Event",
-    today: "Today",
-    tomorrow: "Tomorrow",
-    linkCopied: "Link copied!",
-    shareLink: "Share Link",
-  },
-  te: {
-    welcomeToLB: "లూక్ బర్నబాస్ మినిస్ట్రీకి స్వాగతం",
-    watchLive: "ప్రత్యక్ష ప్రసంగాలను చూడండి",
-    shareStream: "స్ట్రీమ్‌ను షేర్ చేయండి",
-    liveBroadcast: "ప్రత్యక్ష ప్రసారం",
-    upcomingEvent: "రాబోయే ఈవెంట్",
-    today: "ఈ రోజు",
-    tomorrow: "రేపు",
-    linkCopied: "లింక్ కాపీ చేయబడింది!",
-    shareLink: "లింక్ షేర్ చేయండి",
-  },
-  hi: {
-    welcomeToLB: "ल्यूक बारनबास मिनिस्ट्री में आपका स्वागत है",
-    watchLive: "लाइव उपदेश देखें",
-    shareStream: "स्ट्रीम शेयर करें",
-    liveBroadcast: "लाइव प्रसारण",
-    upcomingEvent: "आगामी कार्यक्रम",
-    today: "आज",
-    tomorrow: "कल",
-    linkCopied: "लिंक कॉपी किया गया!",
-    shareLink: "लिंक शेयर करें",
-  }
-};
+import { useHomeContent } from '@/hooks/useHomeContent';
 
 const Home = () => {
   const { language } = useLanguage();
-  const [isLive, setIsLive] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
-  
-  const t = translations[language] || translations.en;
-  
-  // Example upcoming event - in a real app, this would come from an API
-  const upcomingEvent = {
-    title: {
-      en: "Evening Prayer Meeting",
-      te: "సాయంత్రం ప్రార్థన సమావేశం",
-      hi: "शाम की प्रार्थना सभा"
-    },
-    date: "2023-04-23", // Today's date for example
-    time: "7:00 PM",
-    description: {
-      en: "Join us for our daily prayer meeting and Bible study session.",
-      te: "మా రోజువారీ ప్రార్థన సమావేశం మరియు బైబిల్ స్టడీ సెషన్‌లో చేరండి.",
-      hi: "हमारी दैनिक प्रार्थना सभा और बाइबिल अध्ययन सत्र में शामिल हों।"
-    }
-  };
+  const { homeContent, isLoading } = useHomeContent();
   
   const handleLiveStatusChange = (status: boolean) => {
-    setIsLive(status);
+    console.log('Live status changed:', status);
   };
   
   const handleShareStream = () => {
-    // In a real app, this would be the actual stream URL
-    const streamUrl = "https://www.youtube.com/channel/UCX-KrCKFRj5FSP-hq9RQXHA";
+    const streamUrl = `https://www.youtube.com/channel/${homeContent?.youtubeChannelId || ''}`;
     
     navigator.clipboard.writeText(streamUrl)
       .then(() => {
@@ -81,18 +25,32 @@ const Home = () => {
         console.error('Failed to copy link: ', err);
       });
   };
+
+  if (isLoading || !homeContent) {
+    return <div>Loading...</div>;
+  }
+  
+  const t = {
+    welcomeToLB: homeContent.welcome[language],
+    watchLive: homeContent.watchLive[language],
+    liveBroadcast: homeContent.liveBroadcast[language],
+    upcomingEvent: "Upcoming Event",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    linkCopied: "Link copied!",
+    shareLink: "Share Link",
+  };
   
   return (
-    <AppLayout language={language} isLive={isLive}>
+    <AppLayout language={language} isLive={homeContent.isLive}>
       <div className="mb-6 fade-in">
         <h1 className="text-2xl font-semibold text-lb-blue-dark mb-4">{t.welcomeToLB}</h1>
         
         <div className="space-y-6">
-          {/* Livestream section */}
           <div>
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-medium text-lb-blue">
-                {isLive ? t.liveBroadcast : t.watchLive}
+                {homeContent.isLive ? t.liveBroadcast : t.watchLive}
               </h2>
               <button 
                 onClick={handleShareStream}
@@ -110,12 +68,11 @@ const Home = () => {
             </div>
             
             <LiveStreamEmbed
-              isLive={false} // In a real app, this would be dynamically determined
+              isLive={homeContent.isLive}
               onLiveStatusChange={handleLiveStatusChange}
             />
           </div>
           
-          {/* Upcoming event section */}
           <div className="content-card">
             <h2 className="text-lg font-medium text-lb-blue mb-2">{t.upcomingEvent}</h2>
             
@@ -126,9 +83,9 @@ const Home = () => {
               </div>
               
               <div>
-                <h3 className="font-medium">{upcomingEvent.title[language]}</h3>
-                <p className="text-sm text-lb-neutral">{upcomingEvent.time}</p>
-                <p className="text-sm mt-1">{upcomingEvent.description[language]}</p>
+                <h3 className="font-medium">{homeContent.upcomingEvent.title[language]}</h3>
+                <p className="text-sm text-lb-neutral">{homeContent.upcomingEvent.time}</p>
+                <p className="text-sm mt-1">{homeContent.upcomingEvent.description[language]}</p>
               </div>
             </div>
           </div>
