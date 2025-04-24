@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   appName: 'luke-barnabas-connect',
   webDir: 'dist',
   server: {
-    url: 'https://88e8f111-9bd7-4773-93fd-ca74580f44ea.lovableproject.com?forceHideBadge=true',
+    androidScheme: 'https',
     cleartext: true
   },
   plugins: {

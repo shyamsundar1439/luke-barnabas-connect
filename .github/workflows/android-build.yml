@@ -48,18 +48,16 @@ jobs:
       - name: Update Gradle properties
         run: |
           echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> android/gradle.properties
-          # Using JAVA_HOME environment variable instead of hardcoded path
-          echo "org.gradle.java.home=$JAVA_HOME" >> android/gradle.properties
+          echo "org.gradle.java.home=\$JAVA_HOME" >> android/gradle.properties
 
       - name: Build APK
         run: |
           cd android
           chmod +x ./gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
