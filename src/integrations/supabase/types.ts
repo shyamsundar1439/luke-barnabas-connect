@@ -27,6 +27,33 @@ export type Database = {
         }
         Relationships: []
       }
+      sermons: {
+        Row: {
+          date: string | null
+          id: string
+          summary: Json
+          thumbnailurl: string | null
+          title: Json
+          videoid: string
+        }
+        Insert: {
+          date?: string | null
+          id?: string
+          summary: Json
+          thumbnailurl?: string | null
+          title: Json
+          videoid: string
+        }
+        Update: {
+          date?: string | null
+          id?: string
+          summary?: Json
+          thumbnailurl?: string | null
+          title?: Json
+          videoid?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
