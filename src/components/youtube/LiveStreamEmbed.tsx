@@ -33,7 +33,7 @@ interface LiveStreamEmbedProps {
 
 const LiveStreamEmbed = ({ 
   channelId = "UCX-KrCKFRj5FSP-hq9RQXHA", // Example channel ID, replace with actual
-  videoId,
+  videoId = "xETQPPeRcos", // Updated livestream link
   isLive = false,
   onLiveStatusChange
 }: LiveStreamEmbedProps) => {
@@ -110,7 +110,7 @@ const LiveStreamEmbed = ({
       <div className="aspect-video rounded-lg overflow-hidden">
         <iframe
           className="w-full h-full"
-          src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -129,3 +129,4 @@ const LiveStreamEmbed = ({
 };
 
 export default LiveStreamEmbed;
+
