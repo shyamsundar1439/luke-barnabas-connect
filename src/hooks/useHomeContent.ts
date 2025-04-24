@@ -55,7 +55,7 @@ export const useHomeContent = () => {
       return data.content as HomeContent;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
-    cacheTime: 1000 * 60 * 15, // 15 minutes
+    gcTime: 1000 * 60 * 15, // 15 minutes (replacing cacheTime which is deprecated)
   });
 
   const { mutate: updateHomeContent, isPending: isUpdating } = useMutation({
