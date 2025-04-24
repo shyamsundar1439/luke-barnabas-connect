@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import LiveStreamEmbed from '@/components/youtube/LiveStreamEmbed';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useHomeContent } from '@/hooks/useHomeContent';
+import { Loader2 } from 'lucide-react';
 
 const Home = () => {
   const { language } = useLanguage();
   const [linkCopied, setLinkCopied] = useState(false);
-  const { homeContent, isLoading } = useHomeContent();
+  const { homeContent, isLoading, refetchHomeContent } = useHomeContent();
   
+  useEffect(() => {
+    // Force refetch when the component mounts
+    refetchHomeContent();
+  }, [refetchHomeContent]);
+
   const handleLiveStatusChange = (status: boolean) => {
     console.log('Live status changed:', status);
   };
@@ -27,13 +34,19 @@ const Home = () => {
   };
 
   if (isLoading || !homeContent) {
-    return <div>Loading...</div>;
+    return (
+      <AppLayout language={language}>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
   }
   
   const t = {
-    welcomeToLB: homeContent.welcome[language],
-    watchLive: homeContent.watchLive[language],
-    liveBroadcast: homeContent.liveBroadcast[language],
+    welcomeToLB: homeContent.welcome[language] || "Welcome to Living Bread Church",
+    watchLive: homeContent.watchLive[language] || "Watch Live",
+    liveBroadcast: homeContent.liveBroadcast[language] || "Live Broadcast",
     upcomingEvent: "Upcoming Event",
     today: "Today",
     tomorrow: "Tomorrow",

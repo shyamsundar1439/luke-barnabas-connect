@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase"; // Update to use the correct supabase client
 
 export type HomeContent = {
   welcome: {
@@ -39,7 +39,7 @@ export type HomeContent = {
 export const useHomeContent = () => {
   const queryClient = useQueryClient();
 
-  const { data: homeContent, isLoading } = useQuery({
+  const { data: homeContent, isLoading, refetch } = useQuery({
     queryKey: ['homeContent'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -53,29 +53,43 @@ export const useHomeContent = () => {
       }
 
       return data.content as HomeContent;
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    cacheTime: 1000 * 60 * 15, // 15 minutes
   });
 
-  const { mutate: updateHomeContent } = useMutation({
+  const { mutate: updateHomeContent, isPending: isUpdating } = useMutation({
     mutationFn: async (content: HomeContent) => {
+      console.log('Updating home content with:', content);
       const { error } = await supabase
         .from('home_content')
         .update({ content, updated_at: new Date().toISOString() })
-        .not('id', 'is', null);
+        .eq('id', 1); // Make sure we're updating the correct record
 
       if (error) {
         console.error('Error updating home content:', error);
         throw error;
       }
+      
+      return content;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Home content updated successfully:', data);
+      // Force invalidate the cache to ensure fresh data is loaded
       queryClient.invalidateQueries({ queryKey: ['homeContent'] });
+      // Also refetch to immediately update the UI
+      refetch();
+    },
+    onError: (error) => {
+      console.error('Mutation error:', error);
     }
   });
 
   return {
     homeContent,
     isLoading,
-    updateHomeContent
+    isUpdating,
+    updateHomeContent,
+    refetchHomeContent: refetch
   };
 };
