@@ -1,27 +1,11 @@
 
 import React, { useState } from 'react';
 import { Play } from 'lucide-react';
-import { useLanguage, LanguageCode } from '@/contexts/LanguageContext';
-
-interface SermonData {
-  id: string;
-  title: {
-    en: string;
-    te: string;
-    hi: string;
-  };
-  summary: {
-    en: string;
-    te: string;
-    hi: string;
-  };
-  videoId: string;
-  thumbnailUrl: string;
-  date: string;
-}
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { Sermon } from '@/pages/Sermons';
 
 interface SermonCardProps {
-  sermon: SermonData;
+  sermon: Sermon;
 }
 
 const SermonCard = ({ sermon }: SermonCardProps) => {
@@ -77,10 +61,6 @@ const SermonCard = ({ sermon }: SermonCardProps) => {
               <span 
                 key={lang} 
                 className={`language-badge ${lang === language ? 'language-active' : ''}`}
-                onClick={() => {
-                  const { setLanguage } = useLanguage();
-                  setLanguage(lang as LanguageCode);
-                }}
               >
                 {lang.toUpperCase()}
               </span>
