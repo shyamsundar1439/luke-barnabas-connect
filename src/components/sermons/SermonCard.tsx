@@ -13,7 +13,10 @@ const SermonCard = ({ sermon }: SermonCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
   // Function to extract video ID from various YouTube URL formats
-  const extractVideoId = (videoUrl: string) => {
+  const extractVideoId = (videoUrl: string | undefined) => {
+    // Handle undefined or empty URL
+    if (!videoUrl) return '';
+    
     // Direct video ID
     if (videoUrl.length === 11) return videoUrl;
     
@@ -32,8 +35,9 @@ const SermonCard = ({ sermon }: SermonCardProps) => {
     return videoUrl;
   };
 
-  const videoId = extractVideoId(sermon.videoId);
-  const thumbnailUrl = sermon.thumbnailUrl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  // Handle both camelCase and lowercase field names for backward compatibility
+  const videoId = extractVideoId(sermon.videoId || sermon.videoid);
+  const thumbnailUrl = sermon.thumbnailUrl || sermon.thumbnailurl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
   return (
     <div className="content-card slide-up">

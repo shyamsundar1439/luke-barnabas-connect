@@ -20,8 +20,10 @@ export interface Sermon {
     te: string;
     hi: string;
   };
-  videoId: string;
-  thumbnailUrl: string;
+  videoId?: string;  // camelCase for TypeScript
+  videoid?: string;  // lowercase from database
+  thumbnailUrl?: string;  // camelCase for TypeScript
+  thumbnailurl?: string;  // lowercase from database
   date: string;
 }
 

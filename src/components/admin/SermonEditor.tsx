@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -139,8 +139,8 @@ const SermonEditor = () => {
       id: Math.random().toString(36).substring(2, 9),
       title: { en: "", te: "", hi: "" },
       summary: { en: "", te: "", hi: "" },
-      videoId: "",
-      thumbnailUrl: "",
+      videoid: "",
+      thumbnailurl: "",
       date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     });
   };
@@ -166,7 +166,7 @@ const SermonEditor = () => {
   const handleSave = () => {
     if (!currentSermon) return;
     
-    if (!currentSermon.title.en || !currentSermon.videoId) {
+    if (!currentSermon.title.en || !currentSermon.videoid) {
       toast({
         title: "Required fields missing",
         description: "Please fill in all required fields",
@@ -230,7 +230,7 @@ const SermonEditor = () => {
               <div>
                 <h3 className="font-semibold">{sermon.title[language]}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-300">
-                  {sermon.date} | Video ID: {sermon.videoId}
+                  {sermon.date} | Video ID: {sermon.videoid}
                 </p>
               </div>
               <div className="flex space-x-2">
@@ -335,8 +335,8 @@ const SermonEditor = () => {
                 <div>
                   <label className="text-sm font-medium">YouTube Video ID</label>
                   <Input 
-                    value={currentSermon.videoId} 
-                    onChange={(e) => handleFormChange('videoId', e.target.value)}
+                    value={currentSermon.videoid || currentSermon.videoId || ''} 
+                    onChange={(e) => handleFormChange('videoid', e.target.value)}
                     placeholder="e.g. dQw4w9WgXcQ"
                   />
                 </div>
@@ -353,14 +353,14 @@ const SermonEditor = () => {
               <div>
                 <label className="text-sm font-medium">Thumbnail URL</label>
                 <Input 
-                  value={currentSermon.thumbnailUrl} 
-                  onChange={(e) => handleFormChange('thumbnailUrl', e.target.value)}
+                  value={currentSermon.thumbnailurl || currentSermon.thumbnailUrl || ''} 
+                  onChange={(e) => handleFormChange('thumbnailurl', e.target.value)}
                   placeholder="Image URL"
                 />
-                {currentSermon.thumbnailUrl && (
+                {(currentSermon.thumbnailurl || currentSermon.thumbnailUrl) && (
                   <div className="mt-2">
                     <img 
-                      src={currentSermon.thumbnailUrl} 
+                      src={currentSermon.thumbnailurl || currentSermon.thumbnailUrl} 
                       alt="Thumbnail preview" 
                       className="h-20 object-cover rounded"
                     />
